@@ -1,5 +1,5 @@
 
-var app = angular.module('ABMangularPHP', ['ui.router']);
+var app = angular.module('ABMangularPHP', ['ui.router','ngPassword']);
 
 app.config(function($stateProvider, $urlRouterProvider) {
   
