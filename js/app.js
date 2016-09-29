@@ -1,8 +1,13 @@
 
-var app = angular.module('ABMangularPHP', ['ui.router','ngPassword']);
+var app = angular.module('ABMangularPHP', ['ui.router','ngPassword','satellizer']);
 
-app.config(function($stateProvider, $urlRouterProvider) {
+app.config(function($stateProvider, $urlRouterProvider,$authProvider) {
   
+
+$authProvider.loginUrl = '/template_laboratorio4/php/jwt/php/auth.php';
+$authProvider.tokenName = 'MiTokenGeneradoEnPHP';
+$authProvider.tokenPrefix = 'Aplicacion';
+$authProvider.tokenHeader = 'data';
 
   $stateProvider
 
@@ -46,9 +51,61 @@ app.config(function($stateProvider, $urlRouterProvider) {
                 }
             })
 
+      .state('persona.login', {
+          url: '/login',
+          views: {
+              'contenido': {
+                  templateUrl: 'vistas/login.html',
+                  controller : 'loginController'
+              }
+          }
+      })
+
 
    
    $urlRouterProvider.otherwise('/inicio');
+});
+
+app.controller('loginController', function($scope, $http, $auth) {
+  $scope.DatoTest="**Login**";
+
+
+  $scope.usuario = {};
+  /*$scope.usuario.correo = "usuario";
+  $scope.usuario.clave = "clave";*/
+
+  console.info("autenticated", $auth.getPayload());
+
+  if($auth.isAuthenticated()){
+    console.info("autenticated", $auth.getPayload());
+  } else
+  {
+    console.info("is not autenticated", $auth.getPayload());
+  }
+
+  $scope.actionLogin = function(){
+      $auth.login($scope.usuario)
+    .then(function(response) {
+      // Redirect user here after a successful log in.
+      console.info("correcto",response);
+
+      if($auth.isAuthenticated())
+      {
+      console.info("autenticated", $auth.getPayload());
+    }else
+    {
+      console.info("is not autenticated", $auth.getPayload());
+    }
+
+    })
+    .catch(function(response) {
+      // Handle errors here, such as displaying a notification
+      // for invalid email and/or password.
+      console.info("error",response);
+
+
+    });
+  };
 });
 
 app.controller('controlPersonaMenu', function($scope, $http) {
